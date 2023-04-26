@@ -11,6 +11,8 @@ public class Lienzo extends Canvas {
     private Colores colores;
     private int tamanoPixel;
     private Color[][] pixeles;
+    private int lastPixelX = -1;
+    private int lastPixelY = -1;
     
     public Lienzo(Colores colores, int tamanoPixel) {
         this.colores = colores;
@@ -23,13 +25,49 @@ public class Lienzo extends Canvas {
                 int y = e.getY() / tamanoPixel;
                 if (x < pixeles.length && y < pixeles[0].length) {
                     pixeles[x][y] = colores.getColorActual();
-                    repaint();
+                    lastPixelX = x;
+                    lastPixelY = y;
+                    repaintPixel(x, y);
+                }
+            }
+        });
+        addMouseMotionListener(new MouseAdapter() {
+            public void mouseDragged(MouseEvent e) {
+                int x = e.getX() / tamanoPixel;
+                int y = e.getY() / tamanoPixel;
+                if (x < pixeles.length && y < pixeles[0].length) {
+                    pixeles[x][y] = colores.getColorActual();
+                    if (x != lastPixelX || y != lastPixelY) {
+                        repaintPixel(x, y);
+                        lastPixelX = x;
+                        lastPixelY = y;
+                    }
                 }
             }
         });
     }
-	
-	public void paint(Graphics g) {
+    
+    private void repaintPixel(int x, int y) {
+        Graphics g = getGraphics();
+        g.setColor(pixeles[x][y]);
+        g.fillRect(x * tamanoPixel, y * tamanoPixel, tamanoPixel, tamanoPixel);
+    }
+    
+    public void paint(Graphics g) {
+        g.setColor(Color.BLACK);
+        for (int i = 0; i <= getWidth(); i += tamanoPixel) {
+            g.drawLine(i, 0, i, getHeight());
+        }
+        for (int i = 0; i <= getHeight(); i += tamanoPixel) {
+            g.drawLine(0, i, getWidth(), i);
+        }
+        if (lastPixelX >= 0 && lastPixelY >= 0 && pixeles[lastPixelX][lastPixelY] != null) {
+            g.setColor(pixeles[lastPixelX][lastPixelY]);
+            g.fillRect(lastPixelX * tamanoPixel, lastPixelY * tamanoPixel, tamanoPixel, tamanoPixel);
+        }
+    }
+
+    public void dibujarSinCuadricula(Graphics g) {
         for (int i = 0; i < pixeles.length; i++) {
             for (int j = 0; j < pixeles[i].length; j++) {
                 if (pixeles[i][j] != null) {
@@ -53,7 +91,7 @@ public class Lienzo extends Canvas {
     
     public void setColores(Colores colores) {
         this.colores = colores;
-        repaint();
+        
     }
     
     public Color[][] getPixeles() {

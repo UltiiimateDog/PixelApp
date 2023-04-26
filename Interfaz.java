@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
@@ -33,12 +34,12 @@ public class Interfaz extends JFrame {
     public Interfaz() {
         super("Pixel Art Maker");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1200, 800);
         setLocationRelativeTo(null);
         
         colores = new Colores();
         
-        lienzo = new Lienzo(colores, 20);
+        lienzo = new Lienzo(colores, 30);
         lienzo.setPreferredSize(new Dimension(600, 600));
         lienzo.setBackground(Color.WHITE);
         
@@ -54,26 +55,35 @@ public class Interfaz extends JFrame {
         }
         
         rojoSlider = new JSlider(0, 255, colores.getRojo());
+        JLabel rojoLabel = new JLabel("Rojo: " + colores.getRojo());
+        JLabel rojoValor = new JLabel(Integer.toString(colores.getRojo()));
         rojoSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 colores.setRojo(rojoSlider.getValue());
                 lienzo.setColores(colores);
+                rojoValor.setText(Integer.toString(rojoSlider.getValue()));
             }
         });
-        
+                
         verdeSlider = new JSlider(0, 255, colores.getVerde());
+        JLabel verdeLabel = new JLabel("Verde: " + colores.getVerde());
+        JLabel verdeValor = new JLabel(Integer.toString(colores.getVerde()));
         verdeSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 colores.setVerde(verdeSlider.getValue());
                 lienzo.setColores(colores);
+                verdeValor.setText(Integer.toString(verdeSlider.getValue()));
             }
         });
-        
+                
         azulSlider = new JSlider(0, 255, colores.getAzul());
+        JLabel azulLabel = new JLabel("Azul: " + colores.getAzul());
+        JLabel azulValor = new JLabel(Integer.toString(colores.getAzul()));
         azulSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 colores.setAzul(azulSlider.getValue());
                 lienzo.setColores(colores);
+                azulValor.setText(Integer.toString(azulSlider.getValue()));
             }
         });
         
@@ -82,24 +92,43 @@ public class Interfaz extends JFrame {
         
         JButton guardarBoton = new JButton("Guardar");
         guardarBoton.addActionListener(e -> {
-            JFileChooser chooser = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                    "Archivos de imagen", "jpg", "jpeg", "png", "bmp", "gif");
-            chooser.setFileFilter(filter);
+            JFileChooser chooser = new JFileChooser(new File(System.getProperty("user.dir")));
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int returnVal = chooser.showSaveDialog(Interfaz.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 try {
                     BufferedImage imagen = new BufferedImage(lienzo.getWidth(), lienzo.getHeight(),
                             BufferedImage.TYPE_INT_ARGB);
-                    lienzo.paint(imagen.getGraphics());
-                    File archivo = chooser.getSelectedFile();
-                    ImageIO.write(imagen, "png", archivo);
+                    lienzo.dibujarSinCuadricula(imagen.getGraphics());
+                    File directorio = chooser.getSelectedFile();
+                    String[] opciones = {"png", "jpg", "gif"};
+                    String extension = (String) JOptionPane.showInputDialog(
+                            Interfaz.this,
+                            "Selecciona la extensión del archivo:",
+                            "Guardar imagen",
+                            JOptionPane.PLAIN_MESSAGE,
+                            null,
+                            opciones,
+                            "png"
+                    );
+                    if (extension != null) {
+                        String nombreArchivo = JOptionPane.showInputDialog(
+                                Interfaz.this,
+                                "Ingresa el nombre del archivo:",
+                                "Guardar imagen",
+                                JOptionPane.PLAIN_MESSAGE
+                        );
+                        if (nombreArchivo != null && !nombreArchivo.isEmpty()) {
+                            File archivo = new File(directorio, nombreArchivo + "." + extension);
+                            ImageIO.write(imagen, extension, archivo);
+                        }
+                    }
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-			}
+            }
         });
-        
+                
         JButton cargarBoton = new JButton("Cargar");
         cargarBoton.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
@@ -119,9 +148,15 @@ public class Interfaz extends JFrame {
             }
         });
         
-        JPanel slidersPanel = new JPanel(new GridLayout(3, 1));
+        JPanel slidersPanel = new JPanel(new GridLayout(3, 2));
+        slidersPanel.add(rojoLabel);
+        slidersPanel.add(rojoValor);
         slidersPanel.add(rojoSlider);
+        slidersPanel.add(verdeLabel);
+        slidersPanel.add(verdeValor);
         slidersPanel.add(verdeSlider);
+        slidersPanel.add(azulLabel);
+        slidersPanel.add(azulValor);
         slidersPanel.add(azulSlider);
         
         JPanel opcionesPanel = new JPanel(new GridLayout(1, 3));
@@ -151,6 +186,7 @@ public class Interfaz extends JFrame {
         contenedor.add(colorActualLabel, BorderLayout.SOUTH);
         
         setVisible(true);
+        lienzo.limpiar();
     }
     
 }
