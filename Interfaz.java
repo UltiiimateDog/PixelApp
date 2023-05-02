@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -30,6 +31,9 @@ public class Interfaz extends JFrame {
     private JSlider rojoSlider;
     private JSlider verdeSlider;
     private JSlider azulSlider;
+    private Color colorSeleccionado;
+    private JLabel colorActualLabel;
+    
     
     public Interfaz() {
         super("Pixel Art Maker");
@@ -50,6 +54,8 @@ public class Interfaz extends JFrame {
             botonColor.addActionListener(e -> {
                 colores.setColorActual(color);
                 lienzo.setColores(colores);
+                colorActualLabel.setBackground(color);
+                colorActualLabel.setOpaque(true);
             });
             coloresPanel.add(botonColor);
         }
@@ -57,33 +63,68 @@ public class Interfaz extends JFrame {
         rojoSlider = new JSlider(0, 255, colores.getRojo());
         JLabel rojoLabel = new JLabel("Rojo: " + colores.getRojo());
         JLabel rojoValor = new JLabel(Integer.toString(colores.getRojo()));
+        
+        
+        verdeSlider = new JSlider(0, 255, colores.getVerde());
+        JLabel verdeLabel = new JLabel("Verde: " + colores.getVerde());
+        JLabel verdeValor = new JLabel(Integer.toString(colores.getVerde()));
+        
+        azulSlider = new JSlider(0, 255, colores.getAzul());
+        JLabel azulLabel = new JLabel("Azul: " + colores.getAzul());
+        JLabel azulValor = new JLabel(Integer.toString(colores.getAzul()));
+        
+        colorActualLabel = new JLabel();
+        colorActualLabel.setPreferredSize(new Dimension(30, 30));
+        colorActualLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        
         rojoSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 colores.setRojo(rojoSlider.getValue());
                 lienzo.setColores(colores);
                 rojoValor.setText(Integer.toString(rojoSlider.getValue()));
-            }
-        });
-                
-        verdeSlider = new JSlider(0, 255, colores.getVerde());
-        JLabel verdeLabel = new JLabel("Verde: " + colores.getVerde());
-        JLabel verdeValor = new JLabel(Integer.toString(colores.getVerde()));
-        verdeSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
+                                               
                 colores.setVerde(verdeSlider.getValue());
                 lienzo.setColores(colores);
                 verdeValor.setText(Integer.toString(verdeSlider.getValue()));
-            }
-        });
-                
-        azulSlider = new JSlider(0, 255, colores.getAzul());
-        JLabel azulLabel = new JLabel("Azul: " + colores.getAzul());
-        JLabel azulValor = new JLabel(Integer.toString(colores.getAzul()));
-        azulSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
+                                               
                 colores.setAzul(azulSlider.getValue());
                 lienzo.setColores(colores);
                 azulValor.setText(Integer.toString(azulSlider.getValue()));
+                               }
+        });
+    
+        verdeSlider.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+            	 colores.setRojo(rojoSlider.getValue());
+                 lienzo.setColores(colores);
+                 rojoValor.setText(Integer.toString(rojoSlider.getValue()));
+                 
+                 colores.setVerde(verdeSlider.getValue());
+                 lienzo.setColores(colores);
+                 verdeValor.setText(Integer.toString(verdeSlider.getValue()));
+                
+                 colores.setAzul(azulSlider.getValue());
+                 lienzo.setColores(colores);
+                 azulValor.setText(Integer.toString(azulSlider.getValue()));
+                                
+            }
+        });
+                
+       
+        azulSlider.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+            	 colores.setRojo(rojoSlider.getValue());
+                 lienzo.setColores(colores);
+                 rojoValor.setText(Integer.toString(rojoSlider.getValue()));
+                                 
+                 colores.setVerde(verdeSlider.getValue());
+                 lienzo.setColores(colores);
+                 verdeValor.setText(Integer.toString(verdeSlider.getValue()));
+                                  
+                 colores.setAzul(azulSlider.getValue());
+                 lienzo.setColores(colores);
+                 azulValor.setText(Integer.toString(azulSlider.getValue()));
+                                   
             }
         });
         
@@ -167,6 +208,15 @@ public class Interfaz extends JFrame {
         JLabel colorActualLabel = new JLabel("  ");
         colorActualLabel.setBackground(colores.getColorActual());
         colorActualLabel.setOpaque(true);
+        ChangeListener changeListener = new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                Color colorSeleccionado = new Color(rojoSlider.getValue(), verdeSlider.getValue(), azulSlider.getValue());
+                colorActualLabel.setBackground(colorSeleccionado);
+            }
+        };
+        rojoSlider.addChangeListener(changeListener);
+        verdeSlider.addChangeListener(changeListener);
+        azulSlider.addChangeListener(changeListener);
         colorActualLabel.setHorizontalAlignment(SwingConstants.CENTER);
         colorActualLabel.setPreferredSize(new Dimension(50, 50));
         colores.addPropertyChangeListener(e -> {
@@ -183,7 +233,7 @@ public class Interfaz extends JFrame {
         Container contenedor = getContentPane();
         contenedor.add(lienzo, BorderLayout.CENTER);
         contenedor.add(herramientasPanel, BorderLayout.EAST);
-        contenedor.add(colorActualLabel, BorderLayout.SOUTH);
+        contenedor.add(colorActualLabel, BorderLayout.NORTH);
         
         setVisible(true);
         lienzo.limpiar();
