@@ -19,7 +19,7 @@ public class Lienzo extends Canvas {
         this.tamanoPixel = tamanoPixel;
         pixeles = new Color[getWidth() / tamanoPixel][getHeight() / tamanoPixel];
         
-        addMouseListener(new MouseAdapter() {
+        addMouseListener(new MouseAdapter() {   //Pinta cuando se hace click
             public void mousePressed(MouseEvent e) {
                 int x = e.getX() / tamanoPixel;
                 int y = e.getY() / tamanoPixel;
@@ -31,7 +31,7 @@ public class Lienzo extends Canvas {
                 }
             }
         });
-        addMouseMotionListener(new MouseAdapter() {
+        addMouseMotionListener(new MouseAdapter() { //Pinta cuando se mantiene el click
             public void mouseDragged(MouseEvent e) {
                 int x = e.getX() / tamanoPixel;
                 int y = e.getY() / tamanoPixel;
@@ -47,13 +47,20 @@ public class Lienzo extends Canvas {
         });
     }
     
-    private void repaintPixel(int x, int y) {
+    private void repaintPixel(int x, int y) { //Pinta el lienzo
         Graphics g = getGraphics();
         g.setColor(pixeles[x][y]);
         g.fillRect(x * tamanoPixel, y * tamanoPixel, tamanoPixel, tamanoPixel);
+        g.setColor(Color.BLACK);
+        for (int i = 0; i <= getWidth(); i += tamanoPixel) {
+            g.drawLine(i, 0, i, getHeight());
+        }
+        for (int i = 0; i <= getHeight(); i += tamanoPixel) {
+            g.drawLine(0, i, getWidth(), i);
+        }
     }
     
-    public void paint(Graphics g) {
+    public void paint(Graphics g) { //Crea el lienzo
         g.setColor(Color.BLACK);
         for (int i = 0; i <= getWidth(); i += tamanoPixel) {
             g.drawLine(i, 0, i, getHeight());
@@ -67,7 +74,7 @@ public class Lienzo extends Canvas {
         }
     }
 
-    public void dibujarSinCuadricula(Graphics g) {
+    public void dibujarSinCuadricula(Graphics g) {  //Crea el lienzo sin cuadricula
         for (int i = 0; i < pixeles.length; i++) {
             for (int j = 0; j < pixeles[i].length; j++) {
                 if (pixeles[i][j] != null) {
@@ -78,12 +85,12 @@ public class Lienzo extends Canvas {
         }
     }
     
-    public void limpiar() {
+    public void limpiar() { //Limpia el lienzp
         pixeles = new Color[getWidth() / tamanoPixel][getHeight() / tamanoPixel];
         repaint();
     }
     
-    public void setTamanoPixel(int tamanoPixel) {
+    public void setTamanoPixel(int tamanoPixel) {   //Cambia el tamaño del pixel
         this.tamanoPixel = tamanoPixel;
         pixeles = new Color[getWidth() / tamanoPixel][getHeight() / tamanoPixel];
         repaint();
