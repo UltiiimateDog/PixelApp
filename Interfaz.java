@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -138,12 +139,16 @@ public class Interfaz extends JFrame {
             int returnVal = chooser.showSaveDialog(Interfaz.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 try {
-                    BufferedImage imagen = new BufferedImage(lienzo.getWidth(), lienzo.getHeight(),
-                            BufferedImage.TYPE_INT_ARGB);
-                    lienzo.dibujarSinCuadricula(imagen.getGraphics());
+                    BufferedImage imagen;
+                    String extension; // Declaración de la variable extension
+                    imagen = new BufferedImage(lienzo.getWidth(), lienzo.getHeight(), BufferedImage.TYPE_INT_RGB);
+                    Graphics2D g2d = imagen.createGraphics();
+                    g2d.setColor(Color.WHITE);
+                    g2d.fillRect(0, 0, imagen.getWidth(), imagen.getHeight());
+                    lienzo.dibujarSinCuadricula(g2d);
                     File directorio = chooser.getSelectedFile();
                     String[] opciones = {"png", "jpg", "gif"};
-                    String extension = (String) JOptionPane.showInputDialog(
+                    extension = (String) JOptionPane.showInputDialog(
                             Interfaz.this,
                             "Selecciona la extensión del archivo:",
                             "Guardar imagen",
@@ -240,4 +245,3 @@ public class Interfaz extends JFrame {
     }
     
 }
-        
